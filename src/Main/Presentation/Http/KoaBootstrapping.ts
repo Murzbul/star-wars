@@ -9,7 +9,7 @@ import compress from 'koa-compress';
 import ThrottleKoaMiddleware from '../Middleware/ThrottleKoaMiddleware';
 import bodyParser from 'koa-bodyparser';
 import IndexKoaRouter from '../Routers/IndexKoaRouter';
-import ItemKoaRouter from '../../../Item/Presentation/Routes/ItemKoaRouter';
+import PlanetKoaRouter from '../../../Planet/Presentation/Routes/PlanetKoaRouter';
 import NotificationKoaHandler from '../../../Notification/Presentation/Handlers/NotificationKoaHandler';
 import { ErrorKoaHandler } from '../Middleware/ErrorKoaHandler';
 
@@ -46,7 +46,7 @@ const KoaBootstrapping = async(config: IExtendAppConfig) =>
     app.addMiddleware<Koa.Middleware>(ThrottleKoaMiddleware);
 
     app.addRouter<Router>(IndexKoaRouter);
-    app.addRouter<Router>(ItemKoaRouter);
+    app.addRouter<Router>(PlanetKoaRouter);
     app.addRouter<Router>(NotificationKoaHandler);
 
     app.addMiddleware<Koa.Middleware>(RedirectRouteNotFoundKoaMiddleware);

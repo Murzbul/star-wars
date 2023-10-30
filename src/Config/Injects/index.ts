@@ -10,18 +10,9 @@ export enum FACTORIES  {
 }
 
 export enum REPOSITORIES  {
-    IAuthRepository = 'IAuthRepository',
-    IAuthzRepository = 'IAuthzRepository',
-    IItemRepository = 'IItemRepository',
-    IUserRepository = 'IUserRepository',
-    IRoleRepository = 'IRoleRepository',
-    IFileRepository = 'IFileRepository',
-    IFileVersionRepository = 'IFileVersionRepository',
+    IPlanetRepository = 'IPlanetRepository',
+    IPeopleRepository = 'IPeopleRepository',
+    IStarshipRepository = 'IStarshipRepository',
+    IFilmRepository = 'IFilmRepository',
     INotificationRepository = 'INotificationRepository'
-}
-
-export enum SERVICES {
-    AuthService = 'AuthService',
-    KeycloakAuthService = 'KeycloakAuthService',
-    AuthorizeService = 'AuthorizeService'
 }

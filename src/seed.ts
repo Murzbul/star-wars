@@ -1,7 +1,7 @@
-import ItemSeed from './Item/Infrastructure/Seeds/ItemSeed';
+import PlanetSeed from './Planet/Infrastructure/Seeds/PlanetSeed';
 
 const seeds = {
-    [ItemSeed.name]: ItemSeed
+    [PlanetSeed.name]: PlanetSeed
 };
 
 export default seeds;
