@@ -1,0 +1,7 @@
+{
+  "env": "development",
+  "url":{
+    "urlApi": "https://nexp.com/api",
+    "urlWeb": "https://nexp.com:3000"
+  }
+}

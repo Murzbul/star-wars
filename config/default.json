@@ -1,0 +1,81 @@
+{
+  "env": "local",
+  "app": {
+    "default": "AppKoa",
+    "path": "/home/node/app",
+    "serverPort": 8089,
+    "setAppProxy": false,
+    "setCookieSecure": false,
+    "setCookieSameSite": "Lax"
+  },
+  "dbConfig": {
+    "Mongoose": {
+      "uri": "db:2707"
+    },
+    "default": "Mongoose"
+  },
+  "cache": {
+    "redis": {
+      "port": 6379,
+      "host": "redis",
+      "password": "ewsua132435"
+    }
+  },
+  "filesystem": {
+    "minio": {
+      "endPoint": "minio",
+      "accessKey": "minio",
+      "secretKey": "12345678",
+      "useSSL": false,
+      "port": 9000,
+      "publicBucket": "experience",
+      "privateBucket": "experience",
+      "rootPath": "",
+      "region": "us-east-1"
+    },
+    "default": "minio",
+    "expiry": 241920
+  },
+  "encryption": {
+    "bcrypt": {
+      "type": "bcrypt",
+      "saltRounds": 10,
+      "algorithm": "HS512"
+    },
+    "default": "bcrypt"
+  },
+  "jwt": {
+    "secret": "mySecretJWT",
+    "expires": 3600,
+    "iss": "digichanges",
+    "aud": "digichanges.com"
+  },
+  "mail": {
+    "host": "mail",
+    "port": 1025,
+    "username": "",
+    "password": "",
+    "secure": false,
+    "senderName": "Notifications",
+    "senderEmailDefault": "notification@localhost.com",
+    "templateDir": "src/Shared/Infrastructure/templates/emails"
+  },
+  "push": {
+    "privateKey": "BFbzNLYCWO7Ei0cmBco43ZCsEbhFAOzcfop1eHYiK8CVCBK_-xeWEWzHHlQiPEUPvuxwMHc1koGj40t2hcgiWvk",
+    "publicKey": "k8sGjPBnD8iabMkB6toD8payp9plozw4t4FSfjhUPhQ"
+  },
+  "url":{
+    "urlApi": "http://localhost:8089/api",
+    "urlWeb": "http://localhost:3000"
+  },
+  "productInfo": {
+    "productName": "experience"
+  },
+  "validationSettings": {
+    "password": {
+      "min": 3,
+      "max": 15
+    }
+  },
+  "executeCrons": false
+}

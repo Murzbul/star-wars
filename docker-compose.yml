@@ -1,0 +1,62 @@
+version: '3.6'
+
+services:
+  node:
+    container_name: starwars_node_1
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: ${STAGE}
+    ports:
+      - "8089:8089"
+      - "9229:9229"
+    volumes:
+      - ./dist:/home/node/app/dist
+      - ./src:/home/node/app/src
+      - ./config:/home/node/app/config:cached
+      - ./.env:/home/node/app/.env
+    networks:
+     - starwarsnet
+
+  db:
+    container_name: starwars_db_1
+    restart: always
+    image: bitnami/mongodb:6.0.11
+    ports:
+      - "27018:27017"
+    networks:
+     - starwarsnet
+    environment:
+      MONGODB_ROOT_PASSWORD: 123456
+      MONGODB_USERNAME: starwars
+      MONGODB_PASSWORD: starwars
+      MONGODB_DATABASE: starwars
+    volumes:
+      - data:/bitnami/mongodb
+
+  redis:
+    image: bitnami/redis:latest
+    restart: always
+    container_name: starwars_redis_1
+    environment:
+      - REDIS_PASSWORD=ewsua132435 # Security reasons
+      - DISABLE_COMMANDS=FLUSHDB,FLUSHALL,CONFIG # Security reasons
+    ports:
+      - "6379:6379"
+    networks:
+     - starwarsnet
+    volumes:
+      - redis:/bitnami/redis/data
+
+networks:
+  starwarsnet:
+    driver: "bridge"
+
+volumes:
+  data:
+    driver: "local"
+  data_sql:
+    driver: "local"
+  redis:
+    driver: "local"

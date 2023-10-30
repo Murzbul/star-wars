@@ -1,0 +1,11 @@
+{
+  "env": "production",
+  "app": {
+    "default": "AppKoa",
+    "path": "/home/node/app",
+    "serverPort": 80,
+    "setAppProxy": true,
+    "setCookieSecure": false,
+    "setCookieSameSite": "None"
+  }
+}
