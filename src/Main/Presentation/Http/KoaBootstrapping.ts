@@ -11,6 +11,8 @@ import bodyParser from 'koa-bodyparser';
 import IndexKoaRouter from '../Routers/IndexKoaRouter';
 import PlanetKoaRouter from '../../../Planet/Presentation/Routes/PlanetKoaRouter';
 import NotificationKoaHandler from '../../../Notification/Presentation/Handlers/NotificationKoaHandler';
+import PeopleKoaRouter from '../../../People/Presentation/Routes/PeopleKoaRouter';
+
 import { ErrorKoaHandler } from '../Middleware/ErrorKoaHandler';
 
 import LoggerKoaMiddleware from '../Middleware/LoggerKoaMiddleware';
@@ -47,6 +49,7 @@ const KoaBootstrapping = async(config: IExtendAppConfig) =>
 
     app.addRouter<Router>(IndexKoaRouter);
     app.addRouter<Router>(PlanetKoaRouter);
+    app.addRouter<Router>(PeopleKoaRouter);
     app.addRouter<Router>(NotificationKoaHandler);
 
     app.addMiddleware<Koa.Middleware>(RedirectRouteNotFoundKoaMiddleware);

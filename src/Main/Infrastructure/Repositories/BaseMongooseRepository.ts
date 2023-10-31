@@ -21,6 +21,11 @@ abstract class BaseMongooseRepository<T extends IBaseDomain, D extends Document 
         return await this.repository.create(entity);
     }
 
+    async saveMany(entities: any): Promise<void>
+    {
+        await this.repository.insertMany(entities);
+    }
+
     async getOne(id: string): Promise<T>
     {
         const entity = await this.repository.findOne({ _id: id } as mongoose.FilterQuery<T>).populate(this.populate);

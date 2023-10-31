@@ -2,10 +2,11 @@ import { connect, connection } from 'mongoose';
 import { urlAlphabet } from 'nanoid';
 import { customAlphabet } from 'nanoid/async';
 
-import PlanetSchema, { PlanetMongooseDocument } from '../../../Planet/Infrastructure/Schemas/PlanetMongoose';
+import PlanetSchema from '../../../Planet/Infrastructure/Schemas/PlanetMongoose';
+import PeopleSchema from "../../../People/Infrastructure/Schemas/PeopleMongoose";
 
 import {
-    EmailNotificationSchema, NotificationMongooseDocument,
+    EmailNotificationSchema,
     NotificationSchema,
     PushNotificationSchema
 } from '../../../Notification/Infrastructure/Schemas/NotificationMongoose';
@@ -43,10 +44,11 @@ class CreateMongooseConnection implements ICreateConnection
         await connect(this.#uri, this.#options);
 
         // Domain
-        connection.model<PlanetMongooseDocument>('Planet', PlanetSchema);
+        connection.model('Planet', PlanetSchema);
+        connection.model('People', PeopleSchema);
 
         // Infrastructure
-        const NotificationModel = connection.model<NotificationMongooseDocument>('Notification', NotificationSchema);
+        const NotificationModel = connection.model('Notification', NotificationSchema);
         NotificationModel.discriminator('EmailNotification', EmailNotificationSchema);
         NotificationModel.discriminator('PushNotification', PushNotificationSchema);
     }

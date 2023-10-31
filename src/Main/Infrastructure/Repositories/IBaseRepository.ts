@@ -3,6 +3,7 @@ import IByOptions from './IByOptions';
 interface IBaseRepository<T>
 {
     save(element: T): Promise<T>;
+    saveMany(element: any): Promise<any>;
     update(element: T): Promise<T>;
     getOne(id: string): Promise<T>;
     delete(id: string): Promise<T>;

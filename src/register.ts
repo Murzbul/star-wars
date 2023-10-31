@@ -10,9 +10,12 @@ import INotificationDomain from './Notification/Domain/Entities/INotificationDom
 
 import PlanetMongooseRepository from './Planet/Infrastructure/Repositories/PlanetMongooseRepository';
 import NotificationMongooseRepository from './Notification/Infrastructure/Repositories/NotificationMongooseRepository';
+import PeopleMongooseRepository from "./People/Infrastructure/Repositories/PeopleMongooseRepository";
+import IPeopleRepository from "./People/Infrastructure/Repositories/IPeopleRepository";
 
 // Repositories
 container.register<IPlanetRepository>(REPOSITORIES.IPlanetRepository, { useClass: PlanetMongooseRepository }, { lifecycle: Lifecycle.Singleton });
+container.register<IPeopleRepository>(REPOSITORIES.IPeopleRepository, { useClass: PeopleMongooseRepository }, { lifecycle: Lifecycle.Singleton });
 container.register<INotificationRepository<INotificationDomain>>(REPOSITORIES.INotificationRepository, { useClass: NotificationMongooseRepository }, { lifecycle: Lifecycle.Singleton });
 
 // Shared

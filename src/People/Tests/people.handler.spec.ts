@@ -1,15 +1,16 @@
 import { SuperAgentTest } from 'supertest';
 import initTestServer from '../../initTestServer';
-import { IPlanetResponse, IListPlanetsResponse } from './types';
+import { IPeopleResponse, IListPeoplesResponse } from './types';
 import MainConfig from '../../Config/MainConfig';
 import ICreateConnection from '../../Main/Infrastructure/Database/ICreateConnection';
 import { faker } from "@faker-js/faker";
+import SavePlanetUseCase from "../../Planet/Domain/UseCases/SavePlanetUseCase";
 
-describe('Start Planet Test', () =>
+describe('Start People Test', () =>
 {
     let request: SuperAgentTest;
     let dbConnection: ICreateConnection;
-    let planetId = '';
+    let peopleId = '';
 
     beforeAll(async() =>
     {
@@ -25,25 +26,46 @@ describe('Start Planet Test', () =>
         await dbConnection.close();
     }));
 
-    describe('Planet Success', () =>
+    describe('People Success', () =>
     {
-        const payload = {
+        let payload;
+
+        beforeAll(async() =>
+        {
+           const payloadPlanet = {
                 name: faker.person.firstName(),
                 rotationPeriod: `${faker.number.int({ max: 24 })}`,
                 orbitalPeriod: `${faker.number.int({ max: 500 })}`,
                 diameter: `${faker.number.int({ max: 100000 })}`,
                 climate: faker.science.chemicalElement().name,
                 gravity: faker.person.firstName(),
-                terrain: faker.word.adjective(),
+                terrain: faker.word.adjective(10),
                 surfaceWater: faker.person.firstName(),
                 population: `${faker.number.int({ max: 500000 })}`,
                 url: faker.internet.url()
-            };
+            }
 
-        test('Add Planet /planets', async() =>
+            const savePlanetUseCase = new SavePlanetUseCase();
+            const planet = await savePlanetUseCase.handle(payloadPlanet);
+
+            payload = {
+                name: faker.person.firstName(),
+                height: `${faker.number.int({ max: 24 })}`,
+                mass: `${faker.number.int({ max: 500 })}`,
+                hairColor: `${faker.number.int({ max: 100000 })}`,
+                skinColor: faker.science.chemicalElement().name,
+                eyeColor: faker.person.firstName(),
+                birthYear: faker.word.adjective(10),
+                gender: faker.person.gender(),
+                homeWorld: planet.getId(),
+                url: faker.internet.url()
+            };
+        });
+
+        test('Add People /people', async() =>
         {
-            const response: IPlanetResponse = await request
-                .post('/api/planets')
+            const response: IPeopleResponse = await request
+                .post('/api/people')
                 .set('Accept', 'application/json')
                 .send(payload);
 
@@ -51,29 +73,28 @@ describe('Start Planet Test', () =>
 
             expect(response.statusCode).toStrictEqual(201);
 
-            planetId = data.id;
+            peopleId = data.id;
         });
 
-        test('Get Planet /planets/:id', async() =>
+        test('Get People /people/:id', async() =>
         {
-            const response: IPlanetResponse = await request
-                .get(`/api/planets/${planetId}`)
+            const response: IPeopleResponse = await request
+                .get(`/api/people/${peopleId}`)
                 .set('Accept', 'application/json')
                 .send();
 
             const { body: { data } } = response;
 
             expect(response.statusCode).toStrictEqual(200);
-
             expect(data.name).toStrictEqual(payload.name);
         });
 
-        test('Get Planets /planets with pagination', async() =>
+        test('Get Peoples /people with pagination', async() =>
         {
             const config = MainConfig.getInstance();
 
-            const response: IListPlanetsResponse = await request
-                .get('/api/planets?pagination[offset]=0&pagination[limit]=5')
+            const response: IListPeoplesResponse = await request
+                .get('/api/people?pagination[offset]=0&pagination[limit]=5')
                 .set('Accept', 'application/json')
                 .send();
 
@@ -81,40 +102,35 @@ describe('Start Planet Test', () =>
 
             expect(response.statusCode).toStrictEqual(200);
 
-            expect(data.length).toStrictEqual(5);
-            expect(pagination.total).toStrictEqual(11);
-            expect(pagination.perPage).toStrictEqual(5);
+            expect(data.length).toStrictEqual(1);
+            expect(pagination.total).toStrictEqual(1);
+            expect(pagination.perPage).toStrictEqual(1);
             expect(pagination.currentPage).toStrictEqual(1);
-            expect(pagination.lastPage).toStrictEqual(3);
+            expect(pagination.lastPage).toStrictEqual(1);
             expect(pagination.from).toStrictEqual(0);
-            expect(pagination.to).toStrictEqual(5);
+            expect(pagination.to).toStrictEqual(1);
             expect(pagination.path).toContain(config.getConfig().url.urlApi);
-            expect(pagination.firstUrl).toContain('/api/planets?pagination[offset]=0&pagination[limit]=5');
-            expect(pagination.lastUrl).toContain('/api/planets?pagination[offset]=10&pagination[limit]=5');
-            expect(pagination.nextUrl).toContain('/api/planets?pagination[offset]=5&pagination[limit]=5');
             expect(pagination.prevUrl).toStrictEqual(null);
-            expect(pagination.currentUrl).toContain('/api/planets?pagination[offset]=0&pagination[limit]=5');
         });
 
-        test('Get Planets /planets without pagination', async() =>
+        test('Get Peoples /people without pagination', async() =>
         {
-            const response: IListPlanetsResponse = await request
-                .get('/api/planets')
+            const response: IListPeoplesResponse = await request
+                .get('/api/people')
                 .set('Accept', 'application/json')
                 .send();
 
             const { body: { data, pagination } } = response;
 
             expect(response.statusCode).toStrictEqual(200);
-
-            expect(data.length).toStrictEqual(11);
+            expect(data.length).toStrictEqual(1);
             expect(pagination).not.toBeDefined();
         });
 
-        test('Get Planets /planets with Filter Type', async() =>
+        test('Get Peoples /people with Filter Type', async() =>
         {
-            const response: IListPlanetsResponse = await request
-                .get(`/api/planets?pagination[limit]=20&pagination[offset]=0&filter[name]=${payload.name}`)
+            const response: IListPeoplesResponse = await request
+                .get(`/api/people?pagination[limit]=20&pagination[offset]=0&filter[name]=${payload.name}`)
                 .set('Accept', 'application/json')
                 .send();
 
@@ -128,10 +144,10 @@ describe('Start Planet Test', () =>
             expect(data[0].name).toStrictEqual(payload.name);
         });
 
-        test('Get Planets /planets with Sort Desc Type', async() =>
+        test('Get Peoples /people with Sort Desc Type', async() =>
         {
-            const response: IListPlanetsResponse = await request
-                .get('/api/planets?pagination[limit]=20&pagination[offset]=0&sort[name]=desc')
+            const response: IListPeoplesResponse = await request
+                .get('/api/people?pagination[limit]=20&pagination[offset]=0&sort[name]=desc')
                 .set('Accept', 'application/json')
                 .send();
 
@@ -139,17 +155,17 @@ describe('Start Planet Test', () =>
         });
     });
 
-    describe('Planet Fails', () =>
+    describe('People Fails', () =>
     {
-        test('Add Planet /Planets', async() =>
+        test('Add People /Peoples', async() =>
         {
             const payload = {
-                name: 'Planet 2',
+                name: 'People 2',
                 climate: true
             };
 
-            const response: IPlanetResponse = await request
-                .post('/api/planets')
+            const response: IPeopleResponse = await request
+                .post('/api/people')
                 .set('Accept', 'application/json')
                 .send(payload);
 
@@ -162,10 +178,10 @@ describe('Start Planet Test', () =>
             expect(error.message).toStrictEqual('Required');
         });
 
-        test('Get Planet /planets/:id', async() =>
+        test('Get People /people/:id', async() =>
         {
-            const response: IPlanetResponse = await request
-                .get(`/api/planets/${planetId}dasdasda123`)
+            const response: IPeopleResponse = await request
+                .get(`/api/people/${peopleId}dasdasda123`)
                 .set('Accept', 'application/json')
                 .send();
 

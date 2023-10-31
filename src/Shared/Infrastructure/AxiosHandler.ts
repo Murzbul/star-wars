@@ -24,18 +24,20 @@ class AxiosHandler
         {
             const { method, url, data, config } = payload;
 
-            const call = this.getApiCall(method);
+            let response: AxiosResponse<any> = await this.axios.request({
+                method,
+                url,
+                data: data ?? undefined
+            });
 
-            let response: AxiosResponse;
-
-            if (method === 'get' || method === 'delete' || method === 'head' || method === 'options')
-            {
-                response = await call(url, config);
-            }
-            else
-            {
-                response = await call(url, data, config);
-            }
+            // if (method === 'get' || method === 'delete' || method === 'head' || method === 'options')
+            // {
+            //     response = await call(url, config);
+            // }
+            // else
+            // {
+            //     response = await call(url, data, config);
+            // }
 
             return response.data;
         }
@@ -43,17 +45,6 @@ class AxiosHandler
         {
             await Logger.error(e.response.data);
         }
-    }
-
-    private getApiCall(method: string)
-    {
-        const calls = {
-            post: this.axios.post,
-            get: this.axios.get
-        };
-
-        // @ts-ignore
-        return calls[method];
     }
 }
 
