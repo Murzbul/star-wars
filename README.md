@@ -1,6 +1,5 @@
 # Welcome to Star Wars Experience!
 
-[![CircleCI](https://circleci.com/gh/DigiChanges/node-experience/tree/master.svg?style=svg)](https://circleci.com/gh/DigiChanges/node-experience/tree/master)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](https://github.com/DigiChanges/node-experience/blob/master/LICENSE)
 
 <div style="text-align:center">
@@ -25,15 +24,24 @@ https://github.com/DigiChanges/node-experience
 We can run the project directly with docker compose and then bash where the basic commands to feed the database are located.
 
 1. git clone https://github.com/Murzbul/star-wars
-2Install dependencies. `pnpm install`.
+2. Install dependencies. `pnpm install`.
 2. Copy `.env.dev` file to `.env`. (**.env.dev** it's an environment example file)
 3. Then execute `STAGE=dev docker-compose up --build` to up all containers or `make dev`
 
+### You can run tests
+1. As outlined in the quick start guide, you must first install the dependencies.
+2. Next, execute pnpm build to transpile TypeScript (TS) code to JavaScript (JS).
+3. To run the tests, use the command pnpm test.
+
+NOTE: No additional dependencies or setups are required to run the tests.
+NOTE2: Step two is crucial for running the tests since they operate on the compiled code. 
+This approach ensures swift coordination between the transpilation of TypeScript and the execution of vanilla JavaScript.
 Each module is divided by business domain:
 
-- File
-- Item
-- Notification
+- People
+- Planet
+- Films
+- Starship
 
 There are also two particular cases:
 
@@ -68,23 +76,6 @@ The directory structures for business domains are as follows:
  ```
 
 ---
-
-> **Tip** I know it may sound repetitive, but it is not a framework. NExp is a set of tools or libraries working together through a common structure. All structural code within this project is not fixed and can be changed freely.
-
-## Advantages
-
-The advantages of using this boilerplate is to save time thinking about certain basic structures common to any project to make an API without having to get everything from scratch. 
-
-As it is only a boilerplate, you have the freedom to structure the code whatever you want.
-
-Common structures found within this project are: 
-
-- Authentication and authorization with [Keycloak](https://www.keycloak.org).
-- Filesystem with [MinIO](https://min.io), 100% S3 compatible.
-- Basic push Notification and Email with nodemailer.
-- MikroORM and Mongoose Integration.
-- Koa integration.
-- Business logic independent of the HTTP and persistence libraries.
 
 ## License
 
