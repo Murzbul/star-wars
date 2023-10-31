@@ -11,6 +11,7 @@ import CreateVapID from './Notification/Presentation/Commands/CreateVapID';
 import Seed from './Main/Presentation/Commands/SeedCommand';
 import initCommand from './initCommand';
 import Logger from './Shared/Helpers/Logger';
+import SyncData from "./Swapi/Presentation/Commands/SyncCommand";
 
 void (async() =>
 {
@@ -22,6 +23,7 @@ void (async() =>
 
         program.addCommand(CreateVapID);
         program.addCommand(Seed);
+        program.addCommand(SyncData);
 
         await program.parseAsync(process.argv);
         exit();
