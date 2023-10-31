@@ -1,5 +1,5 @@
 import { Command } from 'commander';
-import SyncDataUseCase from "../../Domain/UseCases/SyncDataUseCase";
+import SyncDataUseCase from '../../Domain/UseCases/SyncDataUseCase';
 
 const SyncData = new Command('swapiSync');
 

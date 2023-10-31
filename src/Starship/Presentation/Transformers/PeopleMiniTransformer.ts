@@ -1,11 +1,11 @@
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import { Transformer } from '@digichanges/shared-experience';
-import IPeopleDomain from '../../Domain/Entities/IPeopleDomain';
-import IPeopleTransformer from './IPeopleTransformer';
 import PlanetTransformer from '../../../Planet/Presentation/Transformers/PlanetTransformer';
+import IPeopleMiniTransformer from "./IPeopleMiniTransformer";
+import IPeopleDomain from "../../../People/Domain/Entities/IPeopleDomain";
 
-class PeopleTransformer extends Transformer
+class PeopleMiniTransformer extends Transformer
 {
     #planetTransformer: PlanetTransformer;
 
@@ -15,7 +15,7 @@ class PeopleTransformer extends Transformer
         this.#planetTransformer = new PlanetTransformer();
     }
 
-    public async transform(people: IPeopleDomain): Promise<IPeopleTransformer>
+    public async transform(people: IPeopleDomain): Promise<IPeopleMiniTransformer>
     {
         dayjs.extend(utc);
 
@@ -29,7 +29,6 @@ class PeopleTransformer extends Transformer
             eyeColor: people.eyeColor,
             birthYear: people.birthYear,
             gender: people.gender,
-            homeWorld: people.homeWorld ? await this.#planetTransformer.handle(people.homeWorld) : null,
             url: people.url,
             createdAt: dayjs(people.createdAt).utc().unix(),
             updatedAt: dayjs(people.updatedAt).utc().unix()
@@ -37,4 +36,4 @@ class PeopleTransformer extends Transformer
     }
 }
 
-export default PeopleTransformer;
+export default PeopleMiniTransformer;

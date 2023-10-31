@@ -1,4 +1,4 @@
-import PlanetRepPayload from "../../Domain/Payloads/PlanetRepPayload";
+import PlanetRepPayload from '../../Domain/Payloads/PlanetRepPayload';
 
 interface IPlanetTransformer extends PlanetRepPayload
 {

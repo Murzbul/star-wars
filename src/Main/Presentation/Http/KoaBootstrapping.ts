@@ -18,6 +18,7 @@ import { ErrorKoaHandler } from '../Middleware/ErrorKoaHandler';
 import LoggerKoaMiddleware from '../Middleware/LoggerKoaMiddleware';
 import RedirectRouteNotFoundKoaMiddleware from '../Middleware/RedirectRouteNotFoundKoaMiddleware';
 import IExtendAppConfig from './IExtendAppConfig';
+import StarshipKoaRouter from '../../../Starship/Presentation/Routes/StarshipKoaRouter';
 
 const KoaBootstrapping = async(config: IExtendAppConfig) =>
 {
@@ -50,6 +51,7 @@ const KoaBootstrapping = async(config: IExtendAppConfig) =>
     app.addRouter<Router>(IndexKoaRouter);
     app.addRouter<Router>(PlanetKoaRouter);
     app.addRouter<Router>(PeopleKoaRouter);
+    app.addRouter<Router>(StarshipKoaRouter);
     app.addRouter<Router>(NotificationKoaHandler);
 
     app.addMiddleware<Koa.Middleware>(RedirectRouteNotFoundKoaMiddleware);

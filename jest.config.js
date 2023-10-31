@@ -34,6 +34,7 @@ module.exports = {
       "!dist/src/**/*Document.{js,ts}",
       "!dist/src/**/Tests/*.{js,ts}",
       "!dist/src/**/*Payload.{js,ts}",
+      "!dist/src/Swapi/Domain/UseCases/SyncDataUseCase.{js,ts}",
   ],
   coverageDirectory: "coverage",
   coveragePathIgnorePatterns: [

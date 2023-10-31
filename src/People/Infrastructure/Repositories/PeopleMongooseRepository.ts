@@ -14,7 +14,7 @@ class PeopleMongooseRepository extends BaseMongooseRepository<IPeopleDomain, Peo
 {
     constructor()
     {
-        super(People.name);
+        super(People.name, ['homeWorld']);
     }
 
     async list(criteria: ICriteria): Promise<IPaginator>
@@ -29,6 +29,8 @@ class PeopleMongooseRepository extends BaseMongooseRepository<IPeopleDomain, Peo
 
             void queryBuilder.where(PeopleFilter.NAME).regex(rSearch);
         }
+
+        void queryBuilder.populate(this.populate);
 
         return new MongoosePaginator(queryBuilder, criteria);
     }

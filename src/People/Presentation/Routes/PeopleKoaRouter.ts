@@ -7,7 +7,6 @@ const routerOpts: Router.IRouterOptions = {
 
 const PeopleKoaRouter: Router = new Router(routerOpts);
 
-PeopleKoaRouter.post('/', PeopleKoaController.save);
 PeopleKoaRouter.get('/', PeopleKoaController.list);
 PeopleKoaRouter.get('/:id', PeopleKoaController.show);
 

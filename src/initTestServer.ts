@@ -1,9 +1,6 @@
 import { IApp } from '@digichanges/shared-experience';
 
-import container from './register';
-
 import supertest from 'supertest';
-import { Lifecycle } from 'tsyringe';
 
 import DatabaseFactory from './Main/Infrastructure/Factories/DatabaseFactory';
 import { EventHandler } from '@digichanges/shared-experience';
@@ -13,8 +10,8 @@ import Locales from './Shared/Utils/Locales';
 import MainConfig from './Config/MainConfig';
 import AppBootstrapFactory from './Main/Presentation/Factories/AppBootstrapFactory';
 import ICreateConnection from './Main/Infrastructure/Database/ICreateConnection';
-import { REPOSITORIES } from './Config/Injects';
 import SendMessageEvent from './Notification/Infrastructure/Events/SendMessageEvent';
+import SyncDataMockUseCase from './Swapi/Tests/SyncDataMockUseCase';
 
 type TestServerData = {
     request: supertest.SuperAgentTest,
@@ -53,6 +50,9 @@ const initTestServer = async(): Promise<TestServerData> =>
 
     const seed = new SeedFactory();
     await seed.init();
+
+    const useCase = new SyncDataMockUseCase();
+    await useCase.handle();
 
     return { request, dbConnection };
 };

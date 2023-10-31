@@ -1,14 +1,14 @@
 import { SuperAgentTest } from 'supertest';
 import initTestServer from '../../initTestServer';
-import { IPeopleResponse, IListPeoplesResponse } from './types';
+import { IStarshipResponse, IListStarshipsResponse } from './types';
 import MainConfig from '../../Config/MainConfig';
 import ICreateConnection from '../../Main/Infrastructure/Database/ICreateConnection';
 
-describe('Start People Test', () =>
+describe('Start Starship Test', () =>
 {
     let request: SuperAgentTest;
     let dbConnection: ICreateConnection;
-    const peopleId = '';
+    const starshipId = '';
 
     beforeAll(async() =>
     {
@@ -24,12 +24,12 @@ describe('Start People Test', () =>
         await dbConnection.close();
     }));
 
-    describe('People Success', () =>
+    describe('Starship Success', () =>
     {
-        test('Get People /people/:id', async() =>
+        test('Get Starship /starships/:id', async() =>
         {
-            const response: IPeopleResponse = await request
-                .get(`/api/people/${peopleId}`)
+            const response: IStarshipResponse = await request
+                .get(`/api/starships/${starshipId}`)
                 .set('Accept', 'application/json')
                 .send();
 
@@ -38,12 +38,12 @@ describe('Start People Test', () =>
             expect(response.statusCode).toStrictEqual(200);
         });
 
-        test('Get Peoples /people with pagination', async() =>
+        test('Get Starships /starships with pagination', async() =>
         {
             const config = MainConfig.getInstance();
 
-            const response: IListPeoplesResponse = await request
-                .get('/api/people?pagination[offset]=0&pagination[limit]=5')
+            const response: IListStarshipsResponse = await request
+                .get('/api/starships?pagination[offset]=0&pagination[limit]=5')
                 .set('Accept', 'application/json')
                 .send();
 
@@ -52,46 +52,39 @@ describe('Start People Test', () =>
             expect(response.statusCode).toStrictEqual(200);
 
             expect(data.length).toStrictEqual(5);
+            expect(pagination.total).toStrictEqual(5);
             expect(pagination.perPage).toStrictEqual(5);
             expect(pagination.currentPage).toStrictEqual(1);
-            expect(pagination.lastPage).toStrictEqual(15);
+            expect(pagination.lastPage).toStrictEqual(1);
             expect(pagination.from).toStrictEqual(0);
             expect(pagination.to).toStrictEqual(5);
             expect(pagination.path).toContain(config.getConfig().url.urlApi);
+            expect(pagination.firstUrl).toContain('/api/starships?pagination[offset]=0&pagination[limit]=5');
+            expect(pagination.lastUrl).toContain('/api/starships?pagination[offset]=0&pagination[limit]=5');
+            expect(pagination.nextUrl).toStrictEqual(null);
             expect(pagination.prevUrl).toStrictEqual(null);
+            expect(pagination.currentUrl).toContain('/api/starships?pagination[offset]=0&pagination[limit]=5');
         });
 
-        test('Get Peoples /people without pagination', async() =>
+        test('Get Starships /starships without pagination', async() =>
         {
-            const response: IListPeoplesResponse = await request
-                .get('/api/people')
+            const response: IListStarshipsResponse = await request
+                .get('/api/starships')
                 .set('Accept', 'application/json')
                 .send();
 
             const { body: { data, pagination } } = response;
 
             expect(response.statusCode).toStrictEqual(200);
-            expect(data.length).toStrictEqual(75);
+
+            expect(data.length).toStrictEqual(5);
             expect(pagination).not.toBeDefined();
         });
 
-        test('Get Peoples /people with Filter Type', async() =>
+        test('Get Starships /starships with Sort Desc Type', async() =>
         {
-            const response: IListPeoplesResponse = await request
-                .get('/api/people?pagination[limit]=20&pagination[offset]=0&filter[name]=Foo1')
-                .set('Accept', 'application/json')
-                .send();
-
-            const { body: { pagination } } = response;
-
-            expect(response.statusCode).toStrictEqual(200);
-            expect(pagination.total).toBeGreaterThanOrEqual(1);
-        });
-
-        test('Get Peoples /people with Sort Desc Type', async() =>
-        {
-            const response: IListPeoplesResponse = await request
-                .get('/api/people?pagination[limit]=20&pagination[offset]=0&sort[name]=desc')
+            const response: IListStarshipsResponse = await request
+                .get('/api/starships?pagination[limit]=20&pagination[offset]=0&sort[name]=desc')
                 .set('Accept', 'application/json')
                 .send();
 
@@ -99,12 +92,12 @@ describe('Start People Test', () =>
         });
     });
 
-    describe('People Fails', () =>
+    describe('Starship Fails', () =>
     {
-        test('Get People /people/:id', async() =>
+        test('Get Starship /starships/:id', async() =>
         {
-            const response: IPeopleResponse = await request
-                .get(`/api/people/${peopleId}dasdasda123`)
+            const response: IStarshipResponse = await request
+                .get(`/api/starships/${starshipId}dasdasda123`)
                 .set('Accept', 'application/json')
                 .send();
 

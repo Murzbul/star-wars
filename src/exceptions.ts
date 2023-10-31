@@ -4,7 +4,7 @@ import InvalidPasswordException from './Main/Domain/Exceptions/InvalidPasswordEx
 const exceptions = {
     [DecryptForbiddenException.name]: StatusCode.HTTP_FORBIDDEN,
     [NotFoundException.name]: StatusCode.HTTP_BAD_REQUEST,
-    [InvalidPasswordException.name]: StatusCode.HTTP_UNPROCESSABLE_ENTITY,
+    [InvalidPasswordException.name]: StatusCode.HTTP_UNPROCESSABLE_ENTITY
 };
 
 export default exceptions;

@@ -11,7 +11,7 @@ import CreateVapID from './Notification/Presentation/Commands/CreateVapID';
 import Seed from './Main/Presentation/Commands/SeedCommand';
 import initCommand from './initCommand';
 import Logger from './Shared/Helpers/Logger';
-import SyncData from "./Swapi/Presentation/Commands/SyncCommand";
+import SyncData from './Swapi/Presentation/Commands/SyncCommand';
 
 void (async() =>
 {

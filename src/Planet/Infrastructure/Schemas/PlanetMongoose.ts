@@ -16,9 +16,10 @@ const PlanetSchema: any = new mongoose.Schema<Planet>({
     terrain: { type: String, required: true },
     surfaceWater: { type: String, required: true },
     population: { type: String, required: true },
-    url: { type: String, required: true },
+    url: { type: String, required: true }
 }, { timestamps: true });
 
+PlanetSchema.index({ url: 1 });
 PlanetSchema.loadClass(Planet);
 
 export default PlanetSchema;

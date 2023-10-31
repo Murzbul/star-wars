@@ -1,5 +1,5 @@
-import PeopleRepPayload from "../../Domain/Payloads/PeopleRepPayload";
-import IPlanetDomain from "../../../Planet/Domain/Entities/IPlanetDomain";
+import PeopleRepPayload from '../../Domain/Payloads/PeopleRepPayload';
+import IPlanetDomain from '../../../Planet/Domain/Entities/IPlanetDomain';
 
 interface IPeopleTransformer extends Omit<PeopleRepPayload, 'homeWorld'>
 {

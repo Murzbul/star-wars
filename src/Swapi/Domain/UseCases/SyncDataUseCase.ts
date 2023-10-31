@@ -1,17 +1,21 @@
 import container from '../../../register';
-import IPlanetRepository from "../../../Planet/Infrastructure/Repositories/IPlanetRepository";
-import IPeopleRepository from "../../../People/Infrastructure/Repositories/IPeopleRepository";
-import {REPOSITORIES} from "../../../Config/Injects";
-import AxiosFactory from "../../../Shared/Factories/AxiosFactory";
-import PlanetRepPayload from "../../../Planet/Domain/Payloads/PlanetRepPayload";
-import IPlanetDomain from "../../../Planet/Domain/Entities/IPlanetDomain";
-import logger from "../../../Shared/Helpers/Logger";
-import AxiosHandler from "../../../Shared/Infrastructure/AxiosHandler";
+import IPlanetRepository from '../../../Planet/Infrastructure/Repositories/IPlanetRepository';
+import IPeopleRepository from '../../../People/Infrastructure/Repositories/IPeopleRepository';
+import { REPOSITORIES } from '../../../Config/Injects';
+import AxiosFactory from '../../../Shared/Factories/AxiosFactory';
+import PlanetRepPayload from '../../../Planet/Domain/Payloads/PlanetRepPayload';
+import IPlanetDomain from '../../../Planet/Domain/Entities/IPlanetDomain';
+import logger from '../../../Shared/Helpers/Logger';
+import AxiosHandler from '../../../Shared/Infrastructure/AxiosHandler';
+import StarshipRepPayload from '../../../Starship/Domain/Payloads/StarshipRepPayload';
+import IStarshipRepository from '../../../Starship/Infrastructure/Repositories/IStarshipRepository';
 
 class SyncDataUseCase
 {
     #planetRepository: IPlanetRepository;
     #peopleRepository: IPeopleRepository;
+    #starshipRepository: IStarshipRepository;
+
     #requester: AxiosHandler;
     #baseUrl = 'https://swapi.dev/api';
 
@@ -19,6 +23,7 @@ class SyncDataUseCase
     {
         this.#planetRepository = container.resolve<IPlanetRepository>(REPOSITORIES.IPlanetRepository);
         this.#peopleRepository = container.resolve<IPeopleRepository>(REPOSITORIES.IPeopleRepository);
+        this.#starshipRepository = container.resolve<IStarshipRepository>(REPOSITORIES.IStarshipRepository);
     }
 
     async handle(): Promise<void>
@@ -26,6 +31,7 @@ class SyncDataUseCase
         this.#requester = AxiosFactory.getAxiosHandlerInstance();
         // await this.#planetAsync();
         // await this.#peopleAsync();
+        // await this.#starshipAsync();
     }
 
     async #planetAsync()
@@ -39,7 +45,7 @@ class SyncDataUseCase
                 url: nextUrl,
                 config: {
                     headers: {
-                        'Accept': '*/*'
+                        Accept: '*/*'
                     }
                 }
             });
@@ -67,15 +73,17 @@ class SyncDataUseCase
                 }
 
                 await this.#planetRepository.saveMany(planetsPayloads as any[]);
-            } else {
-                console.error('Invalid response format:', response);
+            }
+            else
+            {
+                await logger.error('Invalid response format:', response);
                 break;
             }
 
             nextUrl = response.next ?? null;
         }
 
-        await logger.info('Planet sync succesfully')
+        await logger.info('Planet sync succesfully');
     }
 
     async #peopleAsync()
@@ -90,63 +98,141 @@ class SyncDataUseCase
                 url: nextUrl,
                 config: {
                     headers: {
-                        'Accept': '*/*'
+                        Accept: '*/*'
                     }
                 }
             });
 
-            if (response && response.results) {
-            const peoplePayloads = [];
-
-            for (const personData of response.results)
+            if (response && response.results)
             {
-                const homeWorldUrl = personData.homeworld;
+                const peoplePayloads = [];
 
-                // Intenta obtener el planeta del caché
-                let homeWorld = planetCache[homeWorldUrl];
-
-                // Si el planeta no está en el caché, búscalo en la base de datos y guárdalo en el caché
-                if (!homeWorld)
+                for (const personData of response.results)
                 {
-                    homeWorld = await this.#planetRepository.getOneBy({ url: homeWorldUrl }, {});
+                    const homeWorldUrl = personData.homeworld;
 
+                    // Intenta obtener el planeta del caché
+                    let homeWorld = planetCache[homeWorldUrl];
+
+                    // Si el planeta no está en el caché, búscalo en la base de datos y guárdalo en el caché
                     if (!homeWorld)
                     {
-                        console.error(`Planet not found for URL: ${homeWorldUrl}`);
-                        continue;
+                        homeWorld = await this.#planetRepository.getOneBy({ url: homeWorldUrl }, {});
+
+                        if (!homeWorld)
+                        {
+                            console.error(`Planet not found for URL: ${homeWorldUrl}`);
+                            continue;
+                        }
+
+                        planetCache[homeWorldUrl] = homeWorld;
                     }
 
-                    planetCache[homeWorldUrl] = homeWorld;
+                    const personPayload = {
+                        name: personData.name,
+                        height: personData.height,
+                        mass: personData.mass,
+                        hairColor: personData.hair_color,
+                        skinColor: personData.skin_color,
+                        eyeColor: personData.eye_color,
+                        birthYear: personData.birth_year,
+                        gender: personData.gender,
+                        homeWorld: homeWorld._id,
+                        url: personData.url
+                    };
+
+                    peoplePayloads.push(personPayload);
                 }
 
-                const personPayload = {
-                    name: personData.name,
-                    height: personData.height,
-                    mass: personData.mass,
-                    hairColor: personData.hair_color,
-                    skinColor: personData.skin_color,
-                    eyeColor: personData.eye_color,
-                    birthYear: personData.birth_year,
-                    gender: personData.gender,
-                    homeWorld: homeWorld._id,
-                    url: personData.url
-                };
-
-                peoplePayloads.push(personPayload);
+                if (peoplePayloads.length > 0)
+                {
+                    await this.#peopleRepository.saveMany(peoplePayloads);
+                }
+            }
+            else
+            {
+                await logger.error('Invalid response format:', response);
+                break;
             }
 
-            if (peoplePayloads.length > 0) {
-                await this.#peopleRepository.saveMany(peoplePayloads);
-            }
-        } else {
-            console.error('Invalid response format:', response);
-            break;
+            nextUrl = response.next ?? null;
         }
 
-        nextUrl = response.next ?? null;
+        await logger.info('People sync successfully');
     }
 
-    await logger.info('People sync successfully');
+    async #starshipAsync()
+    {
+        let nextUrl = `${this.#baseUrl}/starships`;
+
+        while (nextUrl)
+        {
+            const response = await this.#requester.send({
+                method: 'GET',
+                url: nextUrl,
+                config: {
+                    headers: {
+                        Accept: '*/*'
+                    }
+                }
+            });
+
+            if (response && response.results)
+            {
+                const starshipPayloads: StarshipRepPayload[] = [];
+
+                for (let i = 0; i < response.results.length; i++)
+                {
+                    const starshipData = response.results[i];
+                    const pilotUrls = starshipData.pilots;
+
+                    const pilotIds = await Promise.all(pilotUrls.map(async(url) =>
+                    {
+                        const pilot = await this.#peopleRepository.getOneBy({ url }, {});
+
+                        if (!pilot)
+                        {
+                            await logger.error(`Pilot not found for URL: ${url}`);
+                            return null;
+                        }
+
+                        return pilot.getId();
+                    }));
+
+                    const validPilotIds = pilotIds.filter(id => id !== null);
+
+                    const starshipPayload: StarshipRepPayload = {
+                        name: starshipData.name,
+                        model: starshipData.model,
+                        manufacturer: starshipData.manufacturer,
+                        costInCredits: starshipData.cost_in_credits,
+                        length: starshipData.length,
+                        maxAtmospheringSpeed: starshipData.max_atmosphering_speed,
+                        crew: starshipData.crew,
+                        passengers: starshipData.passengers,
+                        cargoCapacity: starshipData.cargo_capacity,
+                        consumables: starshipData.consumables,
+                        hyperdriveRating: starshipData.hyperdrive_rating,
+                        mglt: starshipData.MGLT,
+                        starshipClass: starshipData.starship_class,
+                        pilots: validPilotIds,
+                        url: starshipData.url
+                    };
+                    starshipPayloads.push(starshipPayload);
+                }
+
+                await this.#starshipRepository.saveMany(starshipPayloads as any[]);
+            }
+            else
+            {
+                await logger.error('Invalid response format:', response);
+                break;
+            }
+
+            nextUrl = response.next ?? null;
+        }
+
+        await logger.info('Starship sync successfully');
     }
 }
 

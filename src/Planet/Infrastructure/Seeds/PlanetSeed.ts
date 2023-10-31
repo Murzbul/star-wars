@@ -1,13 +1,19 @@
 import { faker } from '@faker-js/faker';
 import BaseSeed from '../../../Shared/Infrastructure/Seeds/BaseSeed';
 import ISeed from '../../../Shared/Infrastructure/Seeds/ISeed';
-import SavePlanetUseCase from "../../Domain/UseCases/SavePlanetUseCase";
+import container from '../../../register';
+import IPlanetRepository from '../Repositories/IPlanetRepository';
+import { REPOSITORIES } from '../../../Config/Injects';
+import IPlanetDomain from '../../Domain/Entities/IPlanetDomain';
 
 class PlanetSeed extends BaseSeed implements ISeed
 {
+    #repository: IPlanetRepository;
+
     constructor()
     {
         super();
+        this.#repository = container.resolve<IPlanetRepository>(REPOSITORIES.IPlanetRepository);
     }
 
     public async init()
@@ -27,10 +33,9 @@ class PlanetSeed extends BaseSeed implements ISeed
                 surfaceWater: faker.person.firstName(),
                 population: `${faker.number.int({ max: 500000 })}`,
                 url: faker.internet.url()
-            }
+            };
 
-            const savePlanetUseCase = new SavePlanetUseCase();
-            await savePlanetUseCase.handle(payload);
+            await this.#repository.save(payload as IPlanetDomain);
         }
     }
 }

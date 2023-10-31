@@ -1,14 +1,10 @@
 import {
-    ResponseMessageEnum,
-    DefaultMessageTransformer,
     RequestCriteria,
     IPaginator, StatusCode
 } from '@digichanges/shared-experience';
 import KoaResponder from '../../../Main/Presentation/Utils/KoaResponder';
 import PlanetTransformer from '../Transformers/PlanetTransformer';
-import PlanetRepPayload from '../../Domain/Payloads/PlanetRepPayload';
 import { IdPayload } from '@digichanges/shared-experience';
-import SavePlanetUseCase from '../../Domain/UseCases/SavePlanetUseCase';
 import { ICriteria } from '@digichanges/shared-experience';
 import PlanetFilter from '../Criterias/PlanetFilter';
 import PlanetSort from '../Criterias/PlanetSort';
@@ -21,18 +17,6 @@ const responder: KoaResponder = new KoaResponder();
 
 class PlanetController
 {
-    static async save(ctx: any): Promise<void>
-    {
-        const payload: PlanetRepPayload = {
-            ...ctx.request.body
-        };
-
-        const useCase = new SavePlanetUseCase();
-        const Planet = await useCase.handle(payload);
-
-        void await responder.send(Planet, ctx, StatusCode.HTTP_CREATED, new DefaultMessageTransformer(ResponseMessageEnum.CREATED));
-    }
-
     static async list(ctx: any): Promise<void>
     {
         const { url, query } = ctx.request;

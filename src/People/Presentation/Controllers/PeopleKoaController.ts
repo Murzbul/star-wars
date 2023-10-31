@@ -1,14 +1,10 @@
 import {
-    ResponseMessageEnum,
-    DefaultMessageTransformer,
     RequestCriteria,
     IPaginator, StatusCode
 } from '@digichanges/shared-experience';
 import KoaResponder from '../../../Main/Presentation/Utils/KoaResponder';
 import PeopleTransformer from '../Transformers/PeopleTransformer';
-import PeopleRepPayload from '../../Domain/Payloads/PeopleRepPayload';
 import { IdPayload } from '@digichanges/shared-experience';
-import SavePeopleUseCase from '../../Domain/UseCases/SavePeopleUseCase';
 import { ICriteria } from '@digichanges/shared-experience';
 import PeopleFilter from '../Criterias/PeopleFilter';
 import PeopleSort from '../Criterias/PeopleSort';
@@ -21,18 +17,6 @@ const responder: KoaResponder = new KoaResponder();
 
 class PeopleController
 {
-    static async save(ctx: any): Promise<void>
-    {
-        const payload: PeopleRepPayload = {
-            ...ctx.request.body
-        };
-
-        const useCase = new SavePeopleUseCase();
-        const People = await useCase.handle(payload);
-
-        void await responder.send(People, ctx, StatusCode.HTTP_CREATED, new DefaultMessageTransformer(ResponseMessageEnum.CREATED));
-    }
-
     static async list(ctx: any): Promise<void>
     {
         const { url, query } = ctx.request;

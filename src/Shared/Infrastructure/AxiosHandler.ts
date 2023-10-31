@@ -24,7 +24,7 @@ class AxiosHandler
         {
             const { method, url, data, config } = payload;
 
-            let response: AxiosResponse<any> = await this.axios.request({
+            const response: AxiosResponse<any> = await this.axios.request({
                 method,
                 url,
                 data: data ?? undefined

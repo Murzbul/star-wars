@@ -3,7 +3,7 @@ import { urlAlphabet } from 'nanoid';
 import { customAlphabet } from 'nanoid/async';
 
 import PlanetSchema from '../../../Planet/Infrastructure/Schemas/PlanetMongoose';
-import PeopleSchema from "../../../People/Infrastructure/Schemas/PeopleMongoose";
+import PeopleSchema from '../../../People/Infrastructure/Schemas/PeopleMongoose';
 
 import {
     EmailNotificationSchema,
@@ -11,6 +11,7 @@ import {
     PushNotificationSchema
 } from '../../../Notification/Infrastructure/Schemas/NotificationMongoose';
 import ICreateConnection from './ICreateConnection';
+import StarshipSchema from '../../../Starship/Infrastructure/Schemas/StarshipMongoose';
 
 type MongooseOptions = { autoIndex: boolean };
 
@@ -46,6 +47,7 @@ class CreateMongooseConnection implements ICreateConnection
         // Domain
         connection.model('Planet', PlanetSchema);
         connection.model('People', PeopleSchema);
+        connection.model('Starship', StarshipSchema);
 
         // Infrastructure
         const NotificationModel = connection.model('Notification', NotificationSchema);

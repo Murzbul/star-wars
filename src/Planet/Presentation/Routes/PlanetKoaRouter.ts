@@ -7,7 +7,6 @@ const routerOpts: Router.IRouterOptions = {
 
 const PlanetKoaRouter: Router = new Router(routerOpts);
 
-PlanetKoaRouter.post('/', PlanetKoaController.save);
 PlanetKoaRouter.get('/', PlanetKoaController.list);
 PlanetKoaRouter.get('/:id', PlanetKoaController.show);
 

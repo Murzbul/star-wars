@@ -1,6 +1,6 @@
 import IPeopleDomain from './IPeopleDomain';
 import { Base } from '@digichanges/shared-experience';
-import IPlanetDomain from "../../../Planet/Domain/Entities/IPlanetDomain";
+import IPlanetDomain from '../../../Planet/Domain/Entities/IPlanetDomain';
 
 class People extends Base implements IPeopleDomain
 {

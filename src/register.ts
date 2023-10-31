@@ -7,15 +7,18 @@ import { FACTORIES, REPOSITORIES } from './Config/Injects';
 import IPlanetRepository from './Planet/Infrastructure/Repositories/IPlanetRepository';
 import INotificationRepository from './Notification/Infrastructure/Repositories/INotificationRepository';
 import INotificationDomain from './Notification/Domain/Entities/INotificationDomain';
+import IPeopleRepository from './People/Infrastructure/Repositories/IPeopleRepository';
+import IStarshipRepository from './Starship/Infrastructure/Repositories/IStarshipRepository';
 
 import PlanetMongooseRepository from './Planet/Infrastructure/Repositories/PlanetMongooseRepository';
 import NotificationMongooseRepository from './Notification/Infrastructure/Repositories/NotificationMongooseRepository';
-import PeopleMongooseRepository from "./People/Infrastructure/Repositories/PeopleMongooseRepository";
-import IPeopleRepository from "./People/Infrastructure/Repositories/IPeopleRepository";
+import PeopleMongooseRepository from './People/Infrastructure/Repositories/PeopleMongooseRepository';
+import StarshipMongooseRepository from './Starship/Infrastructure/Repositories/StarshipMongooseRepository';
 
 // Repositories
 container.register<IPlanetRepository>(REPOSITORIES.IPlanetRepository, { useClass: PlanetMongooseRepository }, { lifecycle: Lifecycle.Singleton });
 container.register<IPeopleRepository>(REPOSITORIES.IPeopleRepository, { useClass: PeopleMongooseRepository }, { lifecycle: Lifecycle.Singleton });
+container.register<IStarshipRepository>(REPOSITORIES.IStarshipRepository, { useClass: StarshipMongooseRepository }, { lifecycle: Lifecycle.Singleton });
 container.register<INotificationRepository<INotificationDomain>>(REPOSITORIES.INotificationRepository, { useClass: NotificationMongooseRepository }, { lifecycle: Lifecycle.Singleton });
 
 // Shared

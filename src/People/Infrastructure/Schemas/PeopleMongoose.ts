@@ -16,9 +16,10 @@ const PeopleSchema: any = new mongoose.Schema<People>({
     birthYear: { type: String, required: true },
     gender: { type: String, required: true },
     homeWorld: { type: mongoose.Schema.Types.String, ref: 'Planet' },
-    url: { type: String, required: true },
+    url: { type: String, required: true }
 }, { timestamps: true });
 
+PeopleSchema.index({ url: 1 });
 PeopleSchema.loadClass(People);
 
 export default PeopleSchema;
