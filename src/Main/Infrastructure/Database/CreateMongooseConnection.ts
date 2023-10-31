@@ -12,6 +12,7 @@ import {
 } from '../../../Notification/Infrastructure/Schemas/NotificationMongoose';
 import ICreateConnection from './ICreateConnection';
 import StarshipSchema from '../../../Starship/Infrastructure/Schemas/StarshipMongoose';
+import FilmSchema from "../../../Films/Infrastructure/Schemas/FilmMongoose";
 
 type MongooseOptions = { autoIndex: boolean };
 
@@ -48,6 +49,7 @@ class CreateMongooseConnection implements ICreateConnection
         connection.model('Planet', PlanetSchema);
         connection.model('People', PeopleSchema);
         connection.model('Starship', StarshipSchema);
+        connection.model('Film', FilmSchema);
 
         // Infrastructure
         const NotificationModel = connection.model('Notification', NotificationSchema);

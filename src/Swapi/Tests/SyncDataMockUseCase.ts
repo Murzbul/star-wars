@@ -6,25 +6,30 @@ import { faker } from '@faker-js/faker';
 import logger from '../../Shared/Helpers/Logger';
 import IPlanetDomain from '../../Planet/Domain/Entities/IPlanetDomain';
 import IStarshipRepository from '../../Starship/Infrastructure/Repositories/IStarshipRepository';
+import IFilmRepository from "../../Films/Infrastructure/Repositories/IFilmRepository";
+import IStarshipDomain from "../../Starship/Domain/Entities/IStarshipDomain";
 
 class SyncDataMockUseCase
 {
     #planetRepository: IPlanetRepository;
     #peopleRepository: IPeopleRepository;
     #starshipRepository: IStarshipRepository;
+    #filmRepository: IFilmRepository;
 
     constructor()
     {
         this.#planetRepository = container.resolve<IPlanetRepository>(REPOSITORIES.IPlanetRepository);
         this.#peopleRepository = container.resolve<IPeopleRepository>(REPOSITORIES.IPeopleRepository);
         this.#starshipRepository = container.resolve<IStarshipRepository>(REPOSITORIES.IStarshipRepository);
+        this.#filmRepository = container.resolve<IFilmRepository>(REPOSITORIES.IFilmRepository);
     }
 
     async handle(): Promise<void>
     {
         const planets = await this.#planetAsync();
         const people = await this.#peopleAsync(planets);
-        await this.#starshipAsync(people);
+        const starshipIds = await this.#starshipAsync(people);
+        await this.#filmAsync(people, planets, starshipIds);
     }
 
     async #generatePlanet()
@@ -90,6 +95,26 @@ class SyncDataMockUseCase
         };
     }
 
+    async #generateFilm(people, planets, starshipIds)
+    {
+        const characterIds = people.map(person => person._id);
+        const planetIds = planets.map(planet => planet._id);
+        const randomStarships = faker.helpers.arrayElements(starshipIds, faker.number.int({ min: 1, max: starshipIds.length }));
+
+        return {
+            title: faker.lorem.words(),
+            episodeUd: faker.number.int({ min: 1, max: 9 }).toString(),
+            openingCrawl: faker.lorem.paragraphs(),
+            director: faker.person.firstName(),
+            producer: faker.person.firstName(),
+            releaseDate: faker.date.past().toISOString().split('T')[0],
+            characters: characterIds,
+            planets: planetIds,
+            starships: randomStarships,
+            url: faker.internet.url()
+        };
+    }
+
     async #planetAsync()
     {
         const planets = [];
@@ -128,6 +153,7 @@ class SyncDataMockUseCase
     async #starshipAsync(people)
     {
         const starships = [];
+        const starshipIds = [];
 
         for (let i = 0; i < 5; i++)
         {
@@ -135,12 +161,29 @@ class SyncDataMockUseCase
             const randomPilots = faker.helpers.arrayElements(pilotIds, faker.number.int({ min: 1, max: pilotIds.length }));
 
             const starship = await this.#generateStarship(randomPilots as string[]);
+            const savedStarship = await this.#starshipRepository.save(starship as any);
+            starshipIds.push(savedStarship.getId());
             starships.push(starship);
         }
 
-        await this.#starshipRepository.saveMany(starships);
-
         await logger.debug('Generated starships');
+
+        return starshipIds;
+    }
+
+   async #filmAsync(people, planets, starshipIds)
+   {
+       const films = [];
+
+        for (let i = 0; i < 5; i++)
+        {
+            const film = await this.#generateFilm(people, planets, starshipIds);
+            films.push(film);
+        }
+
+        await this.#filmRepository.saveMany(films);
+
+        await logger.debug('Generated films');
     }
 }
 

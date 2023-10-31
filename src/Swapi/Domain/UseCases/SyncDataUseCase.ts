@@ -9,12 +9,14 @@ import logger from '../../../Shared/Helpers/Logger';
 import AxiosHandler from '../../../Shared/Infrastructure/AxiosHandler';
 import StarshipRepPayload from '../../../Starship/Domain/Payloads/StarshipRepPayload';
 import IStarshipRepository from '../../../Starship/Infrastructure/Repositories/IStarshipRepository';
+import IFilmRepository from "../../../Films/Infrastructure/Repositories/IFilmRepository";
 
 class SyncDataUseCase
 {
     #planetRepository: IPlanetRepository;
     #peopleRepository: IPeopleRepository;
     #starshipRepository: IStarshipRepository;
+    #filmRepository: IFilmRepository;
 
     #requester: AxiosHandler;
     #baseUrl = 'https://swapi.dev/api';
@@ -24,14 +26,16 @@ class SyncDataUseCase
         this.#planetRepository = container.resolve<IPlanetRepository>(REPOSITORIES.IPlanetRepository);
         this.#peopleRepository = container.resolve<IPeopleRepository>(REPOSITORIES.IPeopleRepository);
         this.#starshipRepository = container.resolve<IStarshipRepository>(REPOSITORIES.IStarshipRepository);
+        this.#filmRepository = container.resolve<IFilmRepository>(REPOSITORIES.IFilmRepository);
     }
 
     async handle(): Promise<void>
     {
         this.#requester = AxiosFactory.getAxiosHandlerInstance();
-        // await this.#planetAsync();
-        // await this.#peopleAsync();
-        // await this.#starshipAsync();
+        await this.#planetAsync();
+        await this.#peopleAsync();
+        await this.#starshipAsync();
+        await this.#filmAsync();
     }
 
     async #planetAsync()
@@ -233,6 +237,100 @@ class SyncDataUseCase
         }
 
         await logger.info('Starship sync successfully');
+    }
+
+    async #filmAsync()
+    {
+        let nextUrl = `${this.#baseUrl}/films`;
+
+        while (nextUrl)
+        {
+            const response = await this.#requester.send({
+                method: 'GET',
+                url: nextUrl,
+                config: {
+                    headers: {
+                        Accept: '*/*'
+                    }
+                }
+            });
+
+            if (response && response.results)
+            {
+                const filmPayloads = [];
+
+                for (const filmData of response.results)
+                {
+                    const characterIds = await Promise.all(filmData.characters.map(async (url) =>
+                    {
+                        const character = await this.#peopleRepository.getOneBy({ url }, {});
+
+                        if (!character)
+                        {
+                            await logger.error(`Character not found for URL: ${url}`);
+                            return null;
+                        }
+
+                        return character.getId();
+                    })).then(ids => ids.filter(id => id !== null));
+
+                    const planetIds = await Promise.all(filmData.planets.map(async (url) =>
+                    {
+                        const planet = await this.#planetRepository.getOneBy({ url }, {});
+
+                        if (!planet)
+                        {
+                            await logger.error(`Planet not found for URL: ${url}`);
+                            return null;
+                        }
+
+                        return planet.getId();
+                    })).then(ids => ids.filter(id => id !== null));
+
+                    const starshipIds = await Promise.all(filmData.starships.map(async (url) =>
+                    {
+                        const starship = await this.#starshipRepository.getOneBy({ url }, {});
+
+                        if (!starship)
+                        {
+                            await logger.error(`Starship not found for URL: ${url}`);
+                            return null;
+                        }
+
+                        return starship.getId();
+                    })).then(ids => ids.filter(id => id !== null));
+
+                    const filmPayload = {
+                        title: filmData.title,
+                        episodeUd: filmData.episode_id.toString(),
+                        openingCrawl: filmData.opening_crawl,
+                        director: filmData.director,
+                        producer: filmData.producer,
+                        releaseDate: filmData.release_date,
+                        characters: characterIds,
+                        planets: planetIds,
+                        starships: starshipIds,
+                        url: filmData.url
+                    };
+
+                    filmPayloads.push(filmPayload);
+                }
+
+                if (filmPayloads.length > 0)
+                {
+                    await this.#filmRepository.saveMany(filmPayloads);
+                }
+            }
+            else
+            {
+                await logger.error('Invalid response format:', response);
+                break;
+            }
+
+            nextUrl = response.next ?? null;
+        }
+
+        await logger.info('Film sync successfully');
     }
 }
 

@@ -19,24 +19,14 @@ import LoggerKoaMiddleware from '../Middleware/LoggerKoaMiddleware';
 import RedirectRouteNotFoundKoaMiddleware from '../Middleware/RedirectRouteNotFoundKoaMiddleware';
 import IExtendAppConfig from './IExtendAppConfig';
 import StarshipKoaRouter from '../../../Starship/Presentation/Routes/StarshipKoaRouter';
+import FilmKoaRouter from "../../../Films/Presentation/Routes/FilmKoaRouter";
 
 const KoaBootstrapping = async(config: IExtendAppConfig) =>
 {
     const app: IApp = new AppKoa(config);
     app.addMiddleware<Koa.Middleware>(cors({
         credentials: true,
-        origin: (ctx) =>
-        {
-            const { env } = config;
-            const validDomains = env === 'development' ? ['http://localhost:3000'] : ['https://domain.com'];
-
-            if (validDomains.indexOf(ctx.request.header.origin) !== -1)
-            {
-                return ctx.request.header.origin;
-            }
-
-            return validDomains[0]; // we can't return void, so let's return one of the valid domains
-        }
+        origin: '*'
     }));
     app.addMiddleware<Koa.Middleware>(helmet());
     app.addMiddleware<Koa.Middleware>(bodyParser({
@@ -52,6 +42,7 @@ const KoaBootstrapping = async(config: IExtendAppConfig) =>
     app.addRouter<Router>(PlanetKoaRouter);
     app.addRouter<Router>(PeopleKoaRouter);
     app.addRouter<Router>(StarshipKoaRouter);
+    app.addRouter<Router>(FilmKoaRouter);
     app.addRouter<Router>(NotificationKoaHandler);
 
     app.addMiddleware<Koa.Middleware>(RedirectRouteNotFoundKoaMiddleware);

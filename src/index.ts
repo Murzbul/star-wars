@@ -14,7 +14,6 @@ import ICreateConnection from './Main/Infrastructure/Database/ICreateConnection'
 import Logger from './Shared/Helpers/Logger';
 import closedApplication from './closed';
 import SendMessageEvent from './Notification/Infrastructure/Events/SendMessageEvent';
-import SyncDataUseCase from './Swapi/Domain/UseCases/SyncDataUseCase';
 
 void (async() =>
 {
@@ -54,9 +53,6 @@ void (async() =>
         // Create cron
         const cronFactory = new CronFactory();
         cronFactory.start();
-
-        const a = new SyncDataUseCase();
-        await a.handle();
 
         // Close gracefully
         closedApplication(server, cache, createConnection, eventHandler);
