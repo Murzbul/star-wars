@@ -38,8 +38,6 @@ class FilmMongooseRepository extends BaseMongooseRepository<IFilmDomain, FilmMon
                 });
         }
 
-        void queryBuilder.populate(this.populate);
-
         return new MongoosePaginator(queryBuilder, criteria);
     }
 }

@@ -12,6 +12,7 @@ import Pagination from '../../../Shared/Utils/Pagination';
 import ListFilmsUseCase from '../../Domain/UseCases/ListFilmsUseCase';
 import GetFilmUseCase from '../../Domain/UseCases/GetFilmUseCase';
 import IFilmDomain from '../../Domain/Entities/IFilmDomain';
+import FilmListTransformer from "../Transformers/FilmListTransformer";
 
 const responder: KoaResponder = new KoaResponder();
 
@@ -30,7 +31,7 @@ class FilmController
         const useCase = new ListFilmsUseCase();
         const paginator: IPaginator = await useCase.handle(requestCriteria);
 
-        await responder.paginate<IFilmDomain>(paginator, ctx, StatusCode.HTTP_OK, new FilmTransformer());
+        await responder.paginate<IFilmDomain>(paginator, ctx, StatusCode.HTTP_OK, new FilmListTransformer());
     }
 
     static async show(ctx: any): Promise<void>
