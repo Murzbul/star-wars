@@ -77,6 +77,16 @@ The directory structures for business domains are as follows:
 
 ---
 
+## Commands
+
+* Sync with Swapi
+
+
+```bash
+pnpm command swapiSync
+```
+** This command work only inside container or when we run locally ***
+
 ## API Documentation
 
 https://documenter.getpostman.com/view/2610856/2s9YXe6PVn
