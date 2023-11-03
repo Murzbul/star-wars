@@ -77,6 +77,10 @@ The directory structures for business domains are as follows:
 
 ---
 
+## API Documentation
+
+https://documenter.getpostman.com/view/2610856/2s9YXe6PVn
+
 ## License
 
 **NExp** is [MIT licensed](LICENSE).
